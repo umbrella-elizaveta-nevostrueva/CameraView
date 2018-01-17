@@ -29,6 +29,9 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     private Camera mCamera;
     private boolean mIsBound = false;
 
+    private Runnable afterStartingRecordRunnable;
+    private Runnable beforeStopingRecordRunnable;
+
     private final int mPostFocusResetDelay = 3000;
     private Runnable mPostFocusResetRunnable = new Runnable() {
         @Override
@@ -46,6 +49,14 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     Camera1(CameraView.CameraCallbacks callback) {
         super(callback);
         mMapper = new Mapper.Mapper1();
+    }
+
+    public void setAfterStartingRecordRunnable(Runnable afterStartingRecordRunnable) {
+        this.afterStartingRecordRunnable = afterStartingRecordRunnable;
+    }
+
+    public void setBeforeStopingRecordRunnable(Runnable beforeStopingRecordRunnable) {
+        this.beforeStopingRecordRunnable = beforeStopingRecordRunnable;
     }
 
     private void schedule(@Nullable final Task<Void> task, final boolean ensureAvailable, final Runnable action) {
@@ -572,15 +583,19 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     private boolean isCameraAvailable() {
         switch (mState) {
             // If we are stopped, don't.
-            case STATE_STOPPED: return false;
+            case STATE_STOPPED:
+                return false;
             // If we are going to be closed, don't act on camera.
             // Even if mCamera != null, it might have been released.
-            case STATE_STOPPING: return false;
+            case STATE_STOPPING:
+                return false;
             // If we are started, mCamera should never be null.
-            case STATE_STARTED: return true;
+            case STATE_STARTED:
+                return true;
             // If we are starting, theoretically we could act.
             // Just check that camera is available.
-            case STATE_STARTING: return mCamera != null;
+            case STATE_STARTING:
+                return mCamera != null;
         }
         return false;
     }
@@ -594,6 +609,7 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         schedule(mStartVideoTask, true, new Runnable() {
             @Override
             public void run() {
+
                 if (mIsCapturingVideo) return;
                 if (mSessionType == SessionType.VIDEO) {
                     mVideoFile = videoFile;
@@ -602,6 +618,7 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
                     try {
                         mMediaRecorder.prepare();
                         mMediaRecorder.start();
+                        if (afterStartingRecordRunnable != null) afterStartingRecordRunnable.run();
                     } catch (Exception e) {
                         LOG.e("Error while starting MediaRecorder. Swallowing.", e);
                         mVideoFile = null;
@@ -631,6 +648,7 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         mIsCapturingVideo = false;
         if (mMediaRecorder != null) {
             try {
+                if (beforeStopingRecordRunnable != null) beforeStopingRecordRunnable.run();
                 mMediaRecorder.stop();
             } catch (Exception e) {
                 // This can happen if endVideo() is called right after startVideo(). We don't care.
@@ -678,15 +696,15 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         mMediaRecorder.setOrientationHint(computeSensorToOutputOffset());
 
         //If the user sets a max file size, set it to the max file size
-        if(mVideoMaxSizeInBytes > 0) {
+        if (mVideoMaxSizeInBytes > 0) {
             mMediaRecorder.setMaxFileSize(mVideoMaxSizeInBytes);
 
             //Attach a listener to the media recorder to listen for file size notifications
             mMediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
                 @Override
                 public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
-                    switch (i){
-                        case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:{
+                    switch (i) {
+                        case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED: {
                             endVideoImmediately();
                             break;
                         }

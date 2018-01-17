@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.otaliastudios.cameraview.CameraListener;
@@ -35,6 +36,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private Size mCaptureNativeSize;
     private long mCaptureTime;
 
+    private ImageView recordIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         setContentView(R.layout.activity_camera);
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
+
+        recordIndicator = findViewById(R.id.recordIndicator);
 
         camera = findViewById(R.id.camera);
         camera.addCameraListener(new CameraListener() {
@@ -52,6 +57,19 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             public void onVideoTaken(File video) {
                 super.onVideoTaken(video);
                 onVideo(video);
+
+            }
+
+            @Override
+            public void onStopRecordVideo() {
+                super.onStopRecordVideo();
+                recordIndicator.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStartRecordVideo() {
+                super.onStartRecordVideo();
+                recordIndicator.setVisibility(View.VISIBLE);
             }
         });
 
