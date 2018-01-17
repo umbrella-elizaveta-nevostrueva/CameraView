@@ -151,4 +151,13 @@ public abstract class CameraListener {
 
     }
 
+    @UiThread
+    public void onStartRecordVideo(){
+
+    }
+
+    @UiThread
+    public void onStopRecordVideo(){
+
+    }
 }

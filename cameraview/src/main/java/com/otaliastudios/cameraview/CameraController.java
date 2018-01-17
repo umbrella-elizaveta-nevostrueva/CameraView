@@ -540,5 +540,13 @@ abstract class CameraController implements
         }
     }
 
+    public void setAfterStartingRecordRunnable(Runnable afterStartingRecordRunnable){
+
+    }
+
+    public void setBeforeStopingRecordRunnable(Runnable beforeStopingRecordRunnable){
+
+    }
+
     //endregion
 }

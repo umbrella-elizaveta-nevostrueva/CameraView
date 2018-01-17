@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:background="#FF444444"
     android:layout_width="match_parent"
@@ -28,6 +29,16 @@
         app:cameraGestureScrollVertical="none"
         app:cameraJpegQuality="100"
         app:cameraSessionType="picture" />
+
+    <ImageView
+        android:id="@+id/recordIndicator"
+        android:src="@drawable/red_circle"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="6dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <!-- Controls -->
     <LinearLayout
