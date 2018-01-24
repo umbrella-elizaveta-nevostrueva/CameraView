@@ -102,7 +102,7 @@ public class CameraUtils {
 
     // TODO ignores flipping
     @SuppressWarnings({"SuspiciousNameCombination", "WeakerAccess"})
-    /* for tests */ static Bitmap decodeBitmap(byte[] source, int maxWidth, int maxHeight) {
+    /* for tests */public static Bitmap decodeBitmap(byte[] source, int maxWidth, int maxHeight) {
         if (maxWidth <= 0) maxWidth = Integer.MAX_VALUE;
         if (maxHeight <= 0) maxHeight = Integer.MAX_VALUE;
         int orientation;
