@@ -62,6 +62,8 @@ abstract class CameraController implements
     private int mDisplayOffset;
     private int mDeviceOrientation;
 
+    protected boolean shutterSound = false;
+
     protected boolean mIsCapturingImage = false;
     protected boolean mIsCapturingVideo = false;
 
@@ -98,6 +100,10 @@ abstract class CameraController implements
         public void uncaughtException(Thread t, Throwable e) {
             // No-op.
         }
+    }
+
+    public void setShutterSound(boolean shutterSound) {
+        this.shutterSound = shutterSound;
     }
 
     @Override

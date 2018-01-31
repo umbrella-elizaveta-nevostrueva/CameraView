@@ -13,6 +13,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.MediaActionSound;
 import android.os.Build;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -84,6 +86,10 @@ public class CameraView extends FrameLayout {
     public CameraView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
+    }
+
+    public void setShutterSound(boolean shutterSound) {
+        mCameraController.setShutterSound(shutterSound);
     }
 
     //region Init
@@ -226,6 +232,7 @@ public class CameraView extends FrameLayout {
         if (!isInEditMode()) {
             mOrientationHelper = new OrientationHelper(context, mCameraCallbacks);
         }
+
     }
 
     protected CameraController instantiateCameraController(CameraCallbacks callbacks) {

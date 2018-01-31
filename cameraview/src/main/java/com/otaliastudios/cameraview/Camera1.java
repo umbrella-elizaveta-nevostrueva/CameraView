@@ -1,5 +1,6 @@
 package com.otaliastudios.cameraview;
 
+import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -7,11 +8,14 @@ import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.io.File;
@@ -476,6 +480,9 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     @Override
     void capturePicture() {
         LOG.v("capturePicture: scheduling");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mCamera.enableShutterSound(shutterSound);
+        }
         schedule(null, true, new Runnable() {
             @Override
             public void run() {
@@ -606,6 +613,9 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
 
     @Override
     void startVideo(@NonNull final File videoFile) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mCamera.enableShutterSound(shutterSound);
+        }
         schedule(mStartVideoTask, true, new Runnable() {
             @Override
             public void run() {
@@ -718,8 +728,6 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
 
     // -----------------
     // Zoom and simpler stuff.
-
-
     @Override
     void setZoom(final float zoom, final PointF[] points, final boolean notify) {
         schedule(mZoomTask, true, new Runnable() {
