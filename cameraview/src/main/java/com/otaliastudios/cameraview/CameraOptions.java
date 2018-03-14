@@ -6,7 +6,6 @@ import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +23,7 @@ public class CameraOptions {
     private Set<Flash> supportedFlash = new HashSet<>(4);
     private Set<Hdr> supportedHdr = new HashSet<>(2);
     private Set<Size> supportedPictureSizes = new HashSet<>(15);
+    private Set<Size> supportedVideoSizes = new HashSet<>(15);
     private Set<AspectRatio> supportedPictureAspectRatio = new HashSet<>(4);
 
     private boolean zoomSupported;
@@ -94,12 +94,20 @@ public class CameraOptions {
             supportedPictureSizes.add(new Size(width, height));
             supportedPictureAspectRatio.add(AspectRatio.of(width, height));
         }
+        List<Camera.Size> videoSizes = params.getSupportedVideoSizes();
+        for (Camera.Size size : videoSizes) {
+            int width = flipSizes ? size.height : size.width;
+            int height = flipSizes ? size.width : size.height;
+            supportedVideoSizes.add(new Size(width, height));
+            supportedPictureAspectRatio.add(AspectRatio.of(width, height));
+        }
     }
 
 
     // Camera2 constructor.
     @TargetApi(21)
-    CameraOptions(CameraCharacteristics params) {}
+    CameraOptions(CameraCharacteristics params) {
+    }
 
 
     /**
@@ -172,6 +180,17 @@ public class CameraOptions {
         return Collections.unmodifiableSet(supportedPictureSizes);
     }
 
+    /**
+     * Set of supported video sizes for the currently opened camera.
+     *
+     * @return a set of supported values.
+     */
+    @NonNull
+    public Set<Size> getSupportedVideoSizes() {
+        // TODO v2: return a Collection
+        return Collections.unmodifiableSet(supportedVideoSizes);
+    }
+
 
     /**
      * Set of supported picture aspect ratios for the currently opened camera.
@@ -188,9 +207,9 @@ public class CameraOptions {
     /**
      * Set of supported facing values.
      *
+     * @return a set of supported values.
      * @see Facing#BACK
      * @see Facing#FRONT
-     * @return a set of supported values.
      */
     @NonNull
     public Set<Facing> getSupportedFacing() {
@@ -202,11 +221,11 @@ public class CameraOptions {
     /**
      * Set of supported flash values.
      *
+     * @return a set of supported values.
      * @see Flash#AUTO
      * @see Flash#OFF
      * @see Flash#ON
      * @see Flash#TORCH
-     * @return a set of supported values.
      */
     @NonNull
     public Set<Flash> getSupportedFlash() {
@@ -218,12 +237,12 @@ public class CameraOptions {
     /**
      * Set of supported white balance values.
      *
+     * @return a set of supported values.
      * @see WhiteBalance#AUTO
      * @see WhiteBalance#INCANDESCENT
      * @see WhiteBalance#FLUORESCENT
      * @see WhiteBalance#DAYLIGHT
      * @see WhiteBalance#CLOUDY
-     * @return a set of supported values.
      */
     @NonNull
     public Set<WhiteBalance> getSupportedWhiteBalance() {
@@ -235,9 +254,9 @@ public class CameraOptions {
     /**
      * Set of supported hdr values.
      *
+     * @return a set of supported values.
      * @see Hdr#OFF
      * @see Hdr#ON
-     * @return a set of supported values.
      */
     @NonNull
     public Set<Hdr> getSupportedHdr() {
@@ -283,9 +302,9 @@ public class CameraOptions {
      * Whether exposure correction is supported. If this is false, calling
      * {@link CameraView#setExposureCorrection(float)} has no effect.
      *
+     * @return whether exposure correction is supported.
      * @see #getExposureCorrectionMinValue()
      * @see #getExposureCorrectionMaxValue()
-     * @return whether exposure correction is supported.
      */
     public boolean isExposureCorrectionSupported() {
         return exposureCorrectionSupported;
