@@ -454,9 +454,11 @@ abstract class CameraController implements
         // Use the list in the camera options, then flip the result if needed.
         boolean flip = shouldFlipSizes();
         SizeSelector selector;
+        List<Size> list;
 
         if (mSessionType == SessionType.PICTURE) {
             selector = SizeSelectors.or(mPictureSizeSelector, SizeSelectors.biggest());
+            list = new ArrayList<>(mCameraOptions.getSupportedPictureSizes());
         } else {
             // The Camcorder internally checks for cameraParameters.getSupportedVideoSizes() etc.
             // And we want the picture size to be the biggest picture consistent with the video aspect ratio.
@@ -471,9 +473,9 @@ abstract class CameraController implements
                     SizeSelectors.and(matchRatio),
                     mPictureSizeSelector
             );
+            list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
         }
 
-        List<Size> list = new ArrayList<>(mCameraOptions.getSupportedPictureSizes());
         Size result = selector.select(list).get(0);
         LOG.i("computePictureSize:", "result:", result, "flip:", flip);
         if (flip) result = result.flip();
