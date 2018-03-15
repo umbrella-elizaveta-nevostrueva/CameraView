@@ -60,6 +60,7 @@ abstract class CameraController implements
 
     protected int mSensorOffset;
     private int mDisplayOffset;
+    private int mProjectOrientation;
     private int mDeviceOrientation;
 
     protected boolean shutterSound = false;
@@ -272,6 +273,11 @@ abstract class CameraController implements
     }
 
     // This can be called multiple times.
+    final void setProjectOrientation(int projectOrientation) {
+        mProjectOrientation = projectOrientation;
+    }
+
+    // This can be called multiple times.
     final void setDeviceOrientation(int deviceOrientation) {
         mDeviceOrientation = deviceOrientation;
     }
@@ -431,11 +437,19 @@ abstract class CameraController implements
      * Returns the orientation to be set as a exif tag.
      */
     protected final int computeSensorToOutputOffset() {
+        int angleNew;
         if (mFacing == Facing.FRONT) {
-            return (mSensorOffset - mDeviceOrientation + 360) % 360;
+            if (mProjectOrientation != 0)
+                angleNew = (mSensorOffset + mProjectOrientation) % 360;
+            else
+                angleNew = (mSensorOffset - mDeviceOrientation + 360) % 360;
         } else {
-            return (mSensorOffset + mDeviceOrientation) % 360;
+            if (mProjectOrientation != 0)
+                angleNew = (mSensorOffset + 360 - mProjectOrientation) % 360;
+            else
+                angleNew = (mSensorOffset + mDeviceOrientation) % 360;
         }
+        return angleNew;
     }
 
     //endregion

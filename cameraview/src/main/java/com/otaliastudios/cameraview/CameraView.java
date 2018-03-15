@@ -829,6 +829,15 @@ public class CameraView extends FrameLayout {
         return mCameraController.getHdr();
     }
 
+    /**
+     * Controls the orientation of project.
+     *
+     * @param projectOrientation Orientation of project in degree.
+     */
+    public void setProjectOrientation(int projectOrientation) {
+        mCameraController.setProjectOrientation(projectOrientation);
+    }
+
 
     /**
      * Set location coordinates to be found later in the jpeg EXIF header
