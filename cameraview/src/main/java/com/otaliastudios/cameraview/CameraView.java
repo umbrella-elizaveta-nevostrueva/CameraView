@@ -1305,11 +1305,11 @@ public class CameraView extends FrameLayout {
      *
      * @param file           a file where the video will be saved
      * @param durationMillis video max duration
-     * @throws IllegalArgumentException if durationMillis is less than 500 milliseconds
+     * @throws IllegalArgumentException if durationMillis is less than 250 milliseconds
      */
     public void startCapturingVideo(File file, long durationMillis) {
-        if (durationMillis < 500) {
-            throw new IllegalArgumentException("Video duration can't be < 500 milliseconds");
+        if (durationMillis < 250) {
+            throw new IllegalArgumentException("Video duration can't be < 250 milliseconds");
         }
         startCapturingVideo(file);
         mUiHandler.postDelayed(new Runnable() {
