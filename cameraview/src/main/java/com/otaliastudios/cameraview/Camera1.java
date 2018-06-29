@@ -168,7 +168,11 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         mFrameManager.allocate(ImageFormat.getBitsPerPixel(mPreviewFormat), mPreviewSize);
 
         LOG.i(log, "Starting preview with startPreview().");
-        mCamera.startPreview();
+        try {
+            mCamera.startPreview();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
         LOG.i(log, "Started preview.");
     }
 
@@ -210,6 +214,7 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         LOG.i("onStop:", "About to clean up.");
         mHandler.get().removeCallbacks(mPostFocusResetRunnable);
         mFrameManager.release();
+        mIsCapturingImage = false;
 
         if (mCamera != null) {
             LOG.i("onStop:", "Clean up.", "Ending video.");
@@ -498,28 +503,36 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
                 Camera.Parameters params = mCamera.getParameters();
                 params.setRotation(sensorToOutput);
                 mCamera.setParameters(params);
-                mCamera.takePicture(
-                        new Camera.ShutterCallback() {
-                            @Override
-                            public void onShutter() {
-                                mCameraCallbacks.onShutter(false);
+                try {
+                    mCamera.takePicture(
+                            new Camera.ShutterCallback() {
+                                @Override
+                                public void onShutter() {
+                                    mCameraCallbacks.onShutter(false);
+                                }
+                            },
+                            null,
+                            null,
+                            new Camera.PictureCallback() {
+                                @Override
+                                public void onPictureTaken(byte[] data, final Camera camera) {
+                                    mIsCapturingImage = false;
+                                    mCameraCallbacks.processImage(data, outputMatchesView, outputFlip);
+                                    try {
+                                        if (isCameraAvailable())
+                                            camera.startPreview(); // This is needed, read somewhere in the docs.
+                                    } catch (RuntimeException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
-                        },
-                        null,
-                        null,
-                        new Camera.PictureCallback() {
-                            @Override
-                            public void onPictureTaken(byte[] data, final Camera camera) {
-                                mIsCapturingImage = false;
-                                mCameraCallbacks.processImage(data, outputMatchesView, outputFlip);
-                                camera.startPreview(); // This is needed, read somewhere in the docs.
-                            }
-                        }
-                );
+                    );
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
-
 
     @Override
     void captureSnapshot() {
