@@ -204,8 +204,8 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
                 // Try starting preview.
                 mCamera.setDisplayOrientation(computeSensorToViewOffset()); // <- not allowed during preview
                 if (shouldBindToSurface()) bindToSurface();
-            } catch (NullPointerException e)
-                e.printStackTrace
+            } catch (NullPointerException e){
+                e.printStackTrace();
             }
             LOG.i("onStart:", "Ended");
         }
