@@ -95,12 +95,15 @@ public class CameraOptions {
             supportedPictureAspectRatio.add(AspectRatio.of(width, height));
         }
         List<Camera.Size> videoSizes = params.getSupportedVideoSizes();
-        for (Camera.Size size : videoSizes) {
-            int width = flipSizes ? size.height : size.width;
-            int height = flipSizes ? size.width : size.height;
-            supportedVideoSizes.add(new Size(width, height));
-            supportedPictureAspectRatio.add(AspectRatio.of(width, height));
-        }
+        if (videoSizes != null)
+            videoSizes = params.getSupportedPreviewSizes();
+        if (videoSizes != null)
+            for (Camera.Size size : videoSizes) {
+                int width = flipSizes ? size.height : size.width;
+                int height = flipSizes ? size.width : size.height;
+                supportedVideoSizes.add(new Size(width, height));
+                supportedPictureAspectRatio.add(AspectRatio.of(width, height));
+            }
     }
 
 

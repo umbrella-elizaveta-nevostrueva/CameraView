@@ -149,26 +149,26 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     // To be called when the preview size is setup or changed.
     private void applySizesAndStartPreview(String log) {
         LOG.i(log, "Dispatching onCameraPreviewSizeChanged.");
-        mCameraCallbacks.onCameraPreviewSizeChanged();
-
-        boolean invertPreviewSizes = shouldFlipSizes();
-        mPreview.setDesiredSize(
-                invertPreviewSizes ? mPreviewSize.getHeight() : mPreviewSize.getWidth(),
-                invertPreviewSizes ? mPreviewSize.getWidth() : mPreviewSize.getHeight()
-        );
-
-        Camera.Parameters params = mCamera.getParameters();
-        mPreviewFormat = params.getPreviewFormat();
-        params.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight()); // <- not allowed during preview
-        params.setPictureSize(mPictureSize.getWidth(), mPictureSize.getHeight()); // <- allowed
-        mCamera.setParameters(params);
-
-        mCamera.setPreviewCallbackWithBuffer(null); // Release anything left
-        mCamera.setPreviewCallbackWithBuffer(this); // Add ourselves
-        mFrameManager.allocate(ImageFormat.getBitsPerPixel(mPreviewFormat), mPreviewSize);
-
-        LOG.i(log, "Starting preview with startPreview().");
         try {
+            mCameraCallbacks.onCameraPreviewSizeChanged();
+
+            boolean invertPreviewSizes = shouldFlipSizes();
+            mPreview.setDesiredSize(
+                    invertPreviewSizes ? mPreviewSize.getHeight() : mPreviewSize.getWidth(),
+                    invertPreviewSizes ? mPreviewSize.getWidth() : mPreviewSize.getHeight()
+            );
+
+            Camera.Parameters params = mCamera.getParameters();
+            mPreviewFormat = params.getPreviewFormat();
+            params.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight()); // <- not allowed during preview
+            params.setPictureSize(mPictureSize.getWidth(), mPictureSize.getHeight()); // <- allowed
+            mCamera.setParameters(params);
+
+            mCamera.setPreviewCallbackWithBuffer(null); // Release anything left
+            mCamera.setPreviewCallbackWithBuffer(this); // Add ourselves
+            mFrameManager.allocate(ImageFormat.getBitsPerPixel(mPreviewFormat), mPreviewSize);
+
+            LOG.i(log, "Starting preview with startPreview().");
             mCamera.startPreview();
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -185,24 +185,28 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
         }
         if (collectCameraId()) {
             mCamera = Camera.open(mCameraId);
-            mCamera.setErrorCallback(this);
+            try{
+                mCamera.setErrorCallback(this);
 
-            // Set parameters that might have been set before the camera was opened.
-            LOG.i("onStart:", "Applying default parameters.");
-            Camera.Parameters params = mCamera.getParameters();
-            mExtraProperties = new ExtraProperties(params);
-            mCameraOptions = new CameraOptions(params, shouldFlipSizes());
-            applyDefaultFocus(params);
-            mergeFlash(params, Flash.DEFAULT);
-            mergeLocation(params, null);
-            mergeWhiteBalance(params, WhiteBalance.DEFAULT);
-            mergeHdr(params, Hdr.DEFAULT);
-            params.setRecordingHint(mSessionType == SessionType.VIDEO);
-            mCamera.setParameters(params);
+                // Set parameters that might have been set before the camera was opened.
+                LOG.i("onStart:", "Applying default parameters.");
+                Camera.Parameters params = mCamera.getParameters();
+                mExtraProperties = new ExtraProperties(params);
+                mCameraOptions = new CameraOptions(params, shouldFlipSizes());
+                applyDefaultFocus(params);
+                mergeFlash(params, Flash.DEFAULT);
+                mergeLocation(params, null);
+                mergeWhiteBalance(params, WhiteBalance.DEFAULT);
+                mergeHdr(params, Hdr.DEFAULT);
+                params.setRecordingHint(mSessionType == SessionType.VIDEO);
+                mCamera.setParameters(params);
 
-            // Try starting preview.
-            mCamera.setDisplayOrientation(computeSensorToViewOffset()); // <- not allowed during preview
-            if (shouldBindToSurface()) bindToSurface();
+                // Try starting preview.
+                mCamera.setDisplayOrientation(computeSensorToViewOffset()); // <- not allowed during preview
+                if (shouldBindToSurface()) bindToSurface();
+            } catch (NullPointerException e)
+                e.printStackTrace
+            }
             LOG.i("onStart:", "Ended");
         }
     }
