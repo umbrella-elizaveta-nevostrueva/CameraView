@@ -95,7 +95,7 @@ public class CameraOptions {
             supportedPictureAspectRatio.add(AspectRatio.of(width, height));
         }
         List<Camera.Size> videoSizes = params.getSupportedVideoSizes();
-        if (videoSizes == null)
+        if (videoSizes != null)
             videoSizes = params.getSupportedPreviewSizes();
         if (videoSizes != null)
             for (Camera.Size size : videoSizes) {
