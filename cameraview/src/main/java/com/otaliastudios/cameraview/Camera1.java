@@ -179,35 +179,40 @@ class Camera1 extends CameraController implements Camera.PreviewCallback, Camera
     @WorkerThread
     @Override
     void onStart() {
-        if (isCameraAvailable()) {
-            LOG.w("onStart:", "Camera not available. Should not happen.");
-            onStop(); // Should not happen.
-        }
-        if (collectCameraId()) {
-            mCamera = Camera.open(mCameraId);
-            try{
-                mCamera.setErrorCallback(this);
-
-                // Set parameters that might have been set before the camera was opened.
-                LOG.i("onStart:", "Applying default parameters.");
-                Camera.Parameters params = mCamera.getParameters();
-                mExtraProperties = new ExtraProperties(params);
-                mCameraOptions = new CameraOptions(params, shouldFlipSizes());
-                applyDefaultFocus(params);
-                mergeFlash(params, Flash.DEFAULT);
-                mergeLocation(params, null);
-                mergeWhiteBalance(params, WhiteBalance.DEFAULT);
-                mergeHdr(params, Hdr.DEFAULT);
-                params.setRecordingHint(mSessionType == SessionType.VIDEO);
-                mCamera.setParameters(params);
-
-                // Try starting preview.
-                mCamera.setDisplayOrientation(computeSensorToViewOffset()); // <- not allowed during preview
-                if (shouldBindToSurface()) bindToSurface();
-            } catch (NullPointerException e){
-                e.printStackTrace();
+        try {
+            if (isCameraAvailable()) {
+                LOG.w("onStart:", "Camera not available. Should not happen.");
+                onStop(); // Should not happen.
             }
-            LOG.i("onStart:", "Ended");
+            if (collectCameraId()) {
+                mCamera = Camera.open(mCameraId);
+                try {
+                    mCamera.setErrorCallback(this);
+
+                    // Set parameters that might have been set before the camera was opened.
+                    LOG.i("onStart:", "Applying default parameters.");
+                    Camera.Parameters params = mCamera.getParameters();
+                    mExtraProperties = new ExtraProperties(params);
+                    mCameraOptions = new CameraOptions(params, shouldFlipSizes());
+                    applyDefaultFocus(params);
+                    mergeFlash(params, Flash.DEFAULT);
+                    mergeLocation(params, null);
+                    mergeWhiteBalance(params, WhiteBalance.DEFAULT);
+                    mergeHdr(params, Hdr.DEFAULT);
+                    params.setRecordingHint(mSessionType == SessionType.VIDEO);
+                    mCamera.setParameters(params);
+
+                    // Try starting preview.
+                    mCamera.setDisplayOrientation(computeSensorToViewOffset()); // <- not allowed during preview
+                    if (shouldBindToSurface()) bindToSurface();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+                LOG.i("onStart:", "Ended");
+            }
+        } catch (RuntimeException e){
+            onStop();
+            onStart();
         }
     }
 
