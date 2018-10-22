@@ -62,7 +62,7 @@ install {
             name 'CameraView'
             description 'A well documented, high-level Android interface that makes capturing pictures ' +
                     'and videos easy, addressing most of the common issues and needs.'
-            url 'https://github.com/natario1/CameraView'
+            url 'https://github.com/umbrella-elizaveta-nevostrueva/CameraView'
 
             packaging 'aar'
             groupId project.group
@@ -76,9 +76,9 @@ install {
                 }
             }
             scm {
-                connection 'https://github.com/natario1/CameraView.git'
-                developerConnection 'https://github.com/natario1/CameraView.git'
-                url 'https://github.com/natario1/CameraView'
+                connection 'https://github.com/umbrella-elizaveta-nevostrueva/CameraView.git'
+                developerConnection 'https://github.com/umbrella-elizaveta-nevostrueva/CameraView.git'
+                url 'https://github.com/umbrella-elizaveta-nevostrueva/CameraView'
 
             }
             developers {
@@ -113,7 +113,7 @@ bintray {
         repo = 'android'
         name = 'CameraView'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/natario1/CameraView.git'
+        vcsUrl = 'https://github.com/umbrella-elizaveta-nevostrueva/CameraView.git'
         publish = true
         override = true
         version {
