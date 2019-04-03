@@ -488,9 +488,10 @@ abstract class CameraController implements
                     mPictureSizeSelector
             );
             List<Size> listPictureSizes = new ArrayList<>(mCameraOptions.getSupportedPictureSizes());
-            if (listPictureSizes != null)
-                list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes()).retainAll(listPictureSizes);
-            else list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
+            if (listPictureSizes != null){
+                list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
+                list.retainAll(listPictureSizes);
+            } else list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
         }
 
         Size result = selector.select(list).get(0);
