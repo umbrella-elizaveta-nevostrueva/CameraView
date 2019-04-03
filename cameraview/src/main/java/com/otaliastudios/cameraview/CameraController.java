@@ -487,11 +487,10 @@ abstract class CameraController implements
                     SizeSelectors.and(matchRatio),
                     mPictureSizeSelector
             );
+            list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
             List<Size> listPictureSizes = new ArrayList<>(mCameraOptions.getSupportedPictureSizes());
-            if (listPictureSizes != null){
-                list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
+            if (listPictureSizes != null)
                 list.retainAll(listPictureSizes);
-            } else list = new ArrayList<>(mCameraOptions.getSupportedVideoSizes());
         }
 
         Size result = selector.select(list).get(0);
