@@ -75,6 +75,7 @@ public class CameraView extends FrameLayout {
 
     // Threading
     private Handler mUiHandler;
+    private Runnable mStopRunnable;
     private WorkerHandler mWorkerHandler;
     private WorkerHandler mFrameProcessorsHandler;
 
@@ -651,6 +652,9 @@ public class CameraView extends FrameLayout {
      * This should be called onPause().
      */
     public void stop() {
+    	if (mStopRunnable != null && mUiHandler != null) {
+    		mUiHandler.removeCallbacks(mStopRunnable);
+    	}
         mCameraController.stop();
     }
 
@@ -1312,12 +1316,13 @@ public class CameraView extends FrameLayout {
             throw new IllegalArgumentException("Video duration can't be < 250 milliseconds");
         }
         startCapturingVideo(file);
-        mUiHandler.postDelayed(new Runnable() {
+        mStopRunnable = new Runnable() {
             @Override
             public void run() {
                 stopCapturingVideo();
             }
-        }, durationMillis);
+        };
+        mUiHandler.postDelayed(mStopRunnable, durationMillis);
     }
 
 
